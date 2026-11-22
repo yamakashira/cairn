@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cairn</title>
+<style>
+:root{--bg:#d9eef5;--surface:rgba(255,255,255,.82);--sky:radial-gradient(ellipse 60% 28% at 72% 10%,rgba(255,255,255,.9),transparent 70%),radial-gradient(ellipse 45% 18% at 18% 30%,rgba(255,255,255,.65),transparent 70%),linear-gradient(180deg,#a6d7ee 0%,#d6edf4 50%,#eef8f5 100%);--ink:#12302f;--muted:#5c7f7c;--line:#0e8f86;--ideal:#9bb5b2;--warn:#c4691c;--field:#f0f7f6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b2427;--surface:rgba(18,54,58,.82);--sky:radial-gradient(ellipse 60% 28% at 72% 10%,rgba(120,200,210,.18),transparent 70%),linear-gradient(180deg,#0e3038,#0b2427);--ink:#e6f2f0;--muted:#8fb3b0;--line:#5fd0c4;--ideal:#5d8582;--warn:#f2a65a;--field:#0b2427}}
+:root[data-theme="dark"]{--bg:#0b2427;--surface:rgba(18,54,58,.82);--sky:radial-gradient(ellipse 60% 28% at 72% 10%,rgba(120,200,210,.18),transparent 70%),linear-gradient(180deg,#0e3038,#0b2427);--ink:#e6f2f0;--muted:#8fb3b0;--line:#5fd0c4;--ideal:#5d8582;--warn:#f2a65a;--field:#0b2427}
+*{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--pg,var(--bg));background-attachment:fixed;color:var(--ink);font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;line-height:1.6}
+main{max-width:560px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.25rem;margin:0 0 16px}
+h2{font-size:1rem;margin:28px 0 8px;color:var(--muted)}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.tab{flex:none;border:1px solid var(--ideal);background:none;color:var(--ink);border-radius:999px;padding:6px 14px;font:inherit;cursor:pointer}
+.tab[aria-pressed=true]{background:var(--line);border-color:var(--line);color:var(--bg);font-weight:700}
+.card{background:var(--card,var(--surface));-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:14px;padding:16px;margin-top:12px}
+.meta{color:var(--muted);font-size:.875rem}
+.hero .meta{color:rgba(255,255,255,.85)}.hero .late{color:#ffc58a}
+.need{font-size:2rem;font-weight:700;margin:4px 0}
+svg{width:100%;height:auto;display:block}
+.row{display:flex;gap:8px;align-items:end;flex-wrap:wrap}
+label{display:flex;flex-direction:column;font-size:.8125rem;color:var(--muted);gap:2px;flex:1;min-width:120px}
+input{font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--ideal);border-radius:8px;padding:8px}
+button.act{font:inherit;font-weight:700;background:var(--line);color:var(--bg);border:0;border-radius:8px;padding:9px 16px;cursor:pointer}
+button.quiet{font:inherit;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:4px 0}
+button:focus-visible,input:focus-visible{outline:2px solid var(--line);outline-offset:2px}
+.late{color:var(--warn)}
+details summary{cursor:pointer;font-weight:700}
+.empty{color:var(--muted);padding:24px 0;text-align:center}
+:root{--bg:#e9ebea;--surface:rgba(255,255,255,.9);--ink:#1d2527;--muted:#667276;--line:#2d6a66;--ideal:#aab4b6;--warn:#9a5b2a;--field:#f4f6f5;--sky:linear-gradient(180deg,#7f98a3,#b9c7cb)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1516;--surface:rgba(26,34,36,.9);--ink:#e4e9e8;--muted:#8a9799;--line:#7fb5ae;--ideal:#4d5b5d;--warn:#d49a62;--field:#0f1516;--sky:linear-gradient(180deg,#27353a,#141c1e)}}
+:root[data-theme="dark"]{--bg:#0f1516;--surface:rgba(26,34,36,.9);--ink:#e4e9e8;--muted:#8a9799;--line:#7fb5ae;--ideal:#4d5b5d;--warn:#d49a62;--field:#0f1516;--sky:linear-gradient(180deg,#27353a,#141c1e)}
+body{letter-spacing:.03em}
+h1{font-size:1.1rem;letter-spacing:.12em;font-weight:700}
+h2{letter-spacing:.1em;font-weight:400}
+.tabs{gap:22px}
+.tab{border:0;border-radius:0;padding:6px 2px;color:var(--muted)}
+.tab[aria-pressed=true]{background:none;color:var(--ink);font-weight:700}
+.card{border-radius:3px;border:1px solid rgba(128,140,142,.28);padding:18px;-webkit-backdrop-filter:none;backdrop-filter:none}
+.need{font-weight:500;letter-spacing:.06em}
+.hero .late{color:#e8c9a0}
+.ttl{font-size:1.15rem;font-weight:700;letter-spacing:.04em;margin-bottom:6px}
+.hero.lt .meta{color:rgba(29,37,39,.7)}.hero.lt .late{color:#9a5b2a}
+input.ttl{width:100%;color:inherit;background:transparent;border:0;border-radius:0;padding:0}
+[hidden]{display:none!important}
+.mtab{font:inherit;background:none;border:0;padding:6px 2px;color:var(--muted);cursor:pointer}
+.mtab[aria-pressed=true]{color:var(--ink);font-weight:700}
+.arc{display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.hero{background:none!important;border:0!important;padding-left:0;padding-right:0}
+input{border-radius:2px;background:var(--field)}
+button.act{background:var(--ink);color:var(--bg);border-radius:2px;letter-spacing:.12em}
+</style>
+</head>
+<body>
+<main>
+
+<div class="tabs" id="tabs" role="group" aria-label="チャート一覧"></div>
+<div id="detail"></div>
+<details class="card" id="addBox">
+<summary>チャートを追加</summary>
+<div class="row" style="margin-top:12px">
+<label style="flex-basis:100%">名前<input id="nTitle" placeholder="例: 物理 標準問題精講"></label>
+<label>全体の量<input id="nTotal" type="number" min="1" inputmode="numeric" placeholder="98"></label>
+<label>単位<input id="nUnit" maxlength="8" placeholder="問"></label>
+<label>開始日<input id="nStart" type="date"></label>
+<label>期限<input id="nEnd" type="date"></label>
+<button class="act" id="nAdd">追加する</button>
+</div>
+<div class="meta" id="nErr" role="alert"></div>
+</details>
+<h2>完了したチャート</h2>
+<div id="archive"></div>
+<details class="card"><summary>グラフの背景（選択中のチャート）</summary><div class="row" id="bgModes" role="group" aria-label="背景の種類" style="margin-top:12px;gap:18px"><button type="button" class="mtab" data-m="photo" aria-pressed="false">写真</button><button type="button" class="mtab" data-m="solid" aria-pressed="false">単色</button><button type="button" class="mtab" data-m="grad" aria-pressed="false">グラデーション</button></div><div id="bgPhoto" hidden style="margin-top:12px"><label>写真を選ぶ<input id="bgFile" type="file" accept="image/*"></label></div><div class="row" id="bgPresets" hidden style="margin-top:12px;gap:10px"></div><div style="margin-top:12px"><button class="quiet" id="bgReset">初期の背景に戻す</button></div><div class="meta" id="bgMsg" role="status"></div></details>
+</main>
+<script>
+const KEY="progress-tracker-v1";
+let S={charts:[],sel:null};
+try{const r=JSON.parse(localStorage.getItem(KEY));if(r&&r.charts)S=r}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s);
+const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const today=()=>iso(new Date());
+const dt=s=>new Date(s+"T00:00:00");
+const diff=(a,b)=>Math.round((dt(b)-dt(a))/864e5);
+const fmt=s=>{const d=dt(s);return (d.getMonth()+1)+"/"+d.getDate()};
+const sumTo=(c,d)=>Object.entries(c.logs).reduce((a,[k,v])=>k<=d?a+v:a,0);
+const remain=c=>c.total-sumTo(c,"9999-12-31");
+const isDone=c=>remain(c)<=0;
+let delArm=null,logDate=today();
+
+function chartSvg(c){
+ const W=340,H=210,L=34,R=10,T=10,B=26,n=Math.max(1,diff(c.start,c.end));
+ const x=i=>L+(W-L-R)*i/n, y=v=>T+(H-T-B)*(1-Math.max(0,v)/c.total);
+ let p='';
+ [0,.5,1].forEach(f=>{const v=Math.round(c.total*f);p+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="currentColor" stroke-opacity=".3"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="10" fill="currentColor">${v}</text>`});
+ p+=`<line x1="${x(0)}" y1="${y(c.total)}" x2="${x(n)}" y2="${y(0)}" stroke="currentColor" stroke-opacity=".55" stroke-width="2" stroke-dasharray="5 4"/>`;
+ const last=Math.min(n,diff(c.start,today()));
+ if(last>=0){let pts=[];for(let i=0;i<=last;i++){const d=iso(new Date(dt(c.start).getTime()+i*864e5));pts.push(`${x(i)},${y(c.total-sumTo(c,d))}`)}
+  p+=`<polyline points="${pts.join(" ")}" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>`}
+ p+=`<text x="${L}" y="${H-6}" font-size="10" fill="currentColor">${fmt(c.start)}</text><text x="${W-R}" y="${H-6}" text-anchor="end" font-size="10" fill="currentColor">${fmt(c.end)}</text>`;
+ return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="残り量の推移グラフ">${p}</svg>`;
+}
+
+function status(c){
+ const t=today(),n=Math.max(1,diff(c.start,c.end)),rem=remain(c);
+ if(t<c.start)return {need:Math.ceil(c.total/(n+1)),note:fmt(c.start)+" から開始予定",late:false};
+ const left=Math.max(1,diff(t,c.end)+1),need=Math.ceil(rem/left);
+ const ideal=c.total*(1-Math.min(1,diff(c.start,t)/n)),gap=Math.round(rem-ideal);
+ const note=t>c.end?"期限を過ぎています":gap>0?`予定より ${gap} 遅れています`:gap<0?`予定より ${-gap} 進んでいます`:"予定どおりです";
+ return {need,note,late:gap>0||t>c.end};
+}
+
+function render(){
+ const act=S.charts.filter(c=>!isDone(c)),arc=S.charts.filter(isDone);
+ if(!S.charts.find(c=>c.id===S.sel))S.sel=act[0]?act[0].id:(S.charts[0]?S.charts[0].id:null);
+ const tl=act.concat(S.charts.filter(c=>c.id===S.sel&&isDone(c)));$("#tabs").innerHTML=tl.length<2?"":tl.map(c=>`<button class="tab" aria-pressed="${c.id===S.sel}" data-id="${c.id}">${esc(c.title)}</button>`).join("");
+ const c=S.charts.find(c=>c.id===S.sel);
+ const rs=document.documentElement.style;if(!c)["--pg","--ink","--muted","--line","--ideal","--field","--card","--warn","--bg"].forEach(k=>rs.removeProperty(k));
+ if(!c){$("#detail").innerHTML='<div class="empty">チャートがありません。下のフォームから追加してください。</div>'}
+ else{const s=status(c),cur=c.logs[logDate]||"",u=c.unit||"",hs=heroStyle(c);
+  const lt=hs.light;[["--pg",hs.bg],["--ink",lt?"#1d2527":"#fff"],["--muted",lt?"rgba(29,37,39,.66)":"rgba(255,255,255,.76)"],["--line",lt?"#2d6a66":"#9fd4cc"],["--ideal",lt?"rgba(29,37,39,.3)":"rgba(255,255,255,.35)"],["--field",lt?"rgba(255,255,255,.75)":"rgba(0,0,0,.32)"],["--card",lt?"rgba(255,255,255,.7)":"rgba(0,0,0,.38)"],["--warn",lt?"#9a5b2a":"#e8c9a0"],["--bg",lt?"#ffffff":"#101617"]].forEach(([k,v])=>rs.setProperty(k,v));
+  $("#detail").innerHTML=`<div class="card hero${hs.light?" lt":""}"><input class="ttl" id="tIn" maxlength="60" value="${esc(c.title)}" aria-label="題名"><div class="meta">${fmt(c.start)} ~ ${fmt(c.end)} / 全体 ${c.total} / 完了 ${c.total-remain(c)} / 残り ${remain(c)}</div>
+  ${chartSvg(c)}
+  <div class="meta">期日までに終わらせるには</div><div class="need">1日 ${s.need}${u?" "+esc(u):""}</div>
+  <div class="${s.late?"late":"meta"}">${s.note}</div></div>
+  <div class="card"><div class="row"><label>日付<input id="lDate" type="date" value="${logDate}"></label>
+  <label>この日にやった量<input id="lNum" type="number" min="0" inputmode="numeric" value="${cur}" placeholder="0"></label>
+  ${u?"":'<label>単位<input id="lUnit" maxlength="8" placeholder="問"></label>'}
+  <button class="act" id="lSave">記録する</button></div>
+  <div class="meta" style="margin-top:16px">記録（数字を書き換えると修正できます）</div>${Object.keys(c.logs).length?Object.keys(c.logs).sort().reverse().map(d=>`<div class="row" style="align-items:center;margin-top:6px"><span style="min-width:56px">${fmt(d)}</span><input class="lg" data-d="${d}" type="number" min="0" inputmode="numeric" value="${c.logs[d]}" style="width:90px;flex:none" aria-label="${fmt(d)}の記録"><span class="meta">${esc(u)}</span><button class="quiet lgdel" data-d="${d}" aria-label="${fmt(d)}の記録を削除">削除</button></div>`).join(""):'<div class="meta" style="margin-top:6px">まだ記録がありません。</div>'}
+  <div style="margin-top:12px"><button class="quiet" id="del">${delArm===c.id?"もう一度押すと削除します":"このチャートを削除"}</button></div></div>`;
+  $("#lDate").onchange=e=>{logDate=e.target.value||today();render()};
+  if($("#lUnit"))$("#lUnit").onchange=e=>{c.unit=e.target.value.trim();save();render()};
+  $("#lSave").onclick=()=>{const v=Math.max(0,Math.floor(Number($("#lNum").value)||0));if(v)c.logs[logDate]=v;else delete c.logs[logDate];save();render()};
+  document.querySelectorAll(".lg").forEach(i=>i.onchange=()=>{const v=Math.max(0,Math.floor(Number(i.value)||0));if(v)c.logs[i.dataset.d]=v;else delete c.logs[i.dataset.d];save();render()});
+  document.querySelectorAll(".lgdel").forEach(b=>b.onclick=()=>{delete c.logs[b.dataset.d];save();render()});
+  $("#tIn").onchange=e=>{const v=e.target.value.trim();if(v){c.title=v;save()}render()};
+  $("#del").onclick=()=>{if(delArm===c.id){S.charts=S.charts.filter(x=>x.id!==c.id);delArm=null;save()}else delArm=c.id;render()};
+ }
+ $("#archive").innerHTML=arc.length?arc.map(c=>`<button class="card arc" data-id="${c.id}"><strong>${esc(c.title)}</strong><div class="meta">${fmt(c.start)} ~ ${fmt(c.end)} / ${c.total} 完了</div></button>`).join(""):'<div class="meta">完了したチャートはここに残ります。</div>';
+ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{S.sel=b.dataset.id;delArm=null;save();render()});
+ document.querySelectorAll(".arc").forEach(b=>b.onclick=()=>{S.sel=b.dataset.id;delArm=null;save();render();window.scrollTo(0,0)});
+}
+const esc=s=>s.replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+$("#nStart").value=today();
+const BG="progress-tracker-bg";
+const PRESETS=["#ffffff","#f6f4ef","#eceff1","#e3ebea","#dfe8f0","#efe7df","#9ec9e2","#8fc2bd","#b4c5ba","#cfc3e3","#efc8bf","#e2c27a","#b7a79a","#6b8f71","#0d5a62","#56688c","#6a5a8c","#a35d5d","#33454a","#1b2a3a","#2e2e33"];
+const isLight=h=>{const n=parseInt(h.slice(1),16);return (((n>>16)*299+((n>>8)&255)*587+(n&255)*114)/1000)>150};
+const heroStyle=c=>{const b=c.bg||"";if(/^#[0-9a-f]{6}$/i.test(b))return {bg:b,light:isLight(b)};const m=/^grad:(#[0-9a-f]{6}),(#[0-9a-f]{6})$/i.exec(b);if(m)return {bg:`linear-gradient(180deg,${m[1]},${m[2]})`,light:isLight(m[1])&&isLight(m[2])};if(b.startsWith("data:image/"))return {bg:`linear-gradient(rgba(10,16,18,.12),rgba(10,16,18,.28)),url('${b}') center/cover`,light:false};return {bg:"#33454a",light:false}};
+const presetUrl=p=>{const svg=`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 900' preserveAspectRatio='xMidYMid slice'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='${p[1][0]}'/><stop offset='1' stop-color='${p[1][1]}'/></linearGradient><filter id='b'><feGaussianBlur stdDeviation='28'/></filter></defs><rect width='600' height='900' fill='url(#g)'/><g filter='url(#b)'>${p[2]}</g></svg>`;return "data:image/svg+xml;base64,"+btoa(svg)};
+const GRADS=[["#9ec9e2","#e4f1f4"],["#0d5a62","#3aa3a6"],["#56688c","#e6bba5"],["#3d5a50","#b4c5ba"],["#0d1a2b","#2f4a68"],["#8e6f8f","#f0c6b4"],["#6b8f71","#d5e2cf"],["#1b2a3a","#53697d"],["#ffffff","#dfe8f0"],["#f6f4ef","#e3d9cc"],["#a35d5d","#efc8bf"],["#2e2e33","#6a6d73"]].map(p=>"grad:"+p.join(","));
+const swatchCss=h=>h.startsWith("grad:")?`linear-gradient(180deg,${h.slice(5).split(",")[0]},${h.slice(5).split(",")[1]})`:h;
+const pb=$("#bgPresets");let bgMode=null;function drawSwatches(){pb.innerHTML="";(bgMode==="grad"?GRADS:PRESETS).forEach(h=>{const b=document.createElement("button");b.type="button";b.className="quiet";b.setAttribute("aria-label","背景色 "+h);b.style.cssText=`width:44px;height:44px;border:1px solid rgba(128,140,142,.4);border-radius:2px;padding:0;background:${swatchCss(h)}`;b.onclick=()=>{const c=S.charts.find(x=>x.id===S.sel);if(!c){$("#bgMsg").textContent="先にチャートを選んでください。";return}c.bg=h;save();$("#bgMsg").textContent="グラフの背景を変更しました。";render()};pb.appendChild(b)})}
+function setMode(m){bgMode=m;document.querySelectorAll("#bgModes .mtab").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.m===m)));$("#bgPhoto").hidden=m!=="photo";pb.hidden=m==="photo";if(m==="solid"||m==="grad")drawSwatches()}
+document.querySelectorAll("#bgModes .mtab").forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+function applyBg(u){const s=document.documentElement.style;u?s.setProperty("--photo",`url("${u}")`):s.removeProperty("--photo")}
+try{applyBg(localStorage.getItem(BG))}catch(e){}
+if($("#bgFile"))$("#bgFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=im.width*k;cv.height=im.height*k;cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);const u=cv.toDataURL("image/jpeg",.75);const c=S.charts.find(x=>x.id===S.sel);if(!c){$("#bgMsg").textContent="先にチャートを選んでください。";return}c.bg=u;save();$("#bgMsg").textContent="グラフの背景を変更しました。";render()};im.src=r.result};r.readAsDataURL(f)};
+$("#bgReset").onclick=()=>{const c=S.charts.find(x=>x.id===S.sel);if(c){delete c.bg;save();render()}$("#bgMsg").textContent="初期の背景に戻しました。"};
+$("#nAdd").onclick=()=>{
+ const title=$("#nTitle").value.trim(),total=Math.floor(Number($("#nTotal").value)),start=$("#nStart").value,end=$("#nEnd").value;
+ if(!title||!(total>0)||!start||!end){$("#nErr").textContent="名前、全体の量、開始日、期限をすべて入力してください。";return}
+ if(end<start){$("#nErr").textContent="期限は開始日より後の日付にしてください。";return}
+ const id=String(Date.now());S.charts.push({id,title,total,start,end,unit:$("#nUnit").value.trim(),logs:{}});S.sel=id;save();
+ ["#nTitle","#nTotal","#nUnit","#nEnd"].forEach(s=>$(s).value="");$("#nErr").textContent="";$("#addBox").open=false;render();
+};
+render();
+</script>
+</body>
+</html>
