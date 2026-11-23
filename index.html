@@ -138,13 +138,13 @@ function render(){
   ${chartSvg(c)}
   <div class="meta">期日までに終わらせるには</div><div class="need">1日 ${s.need}${u?" "+esc(u):""}</div>
   <div class="${s.late?"late":"meta"}">${s.note}</div></div>
-  <div class="card"><div class="row"><label>日付<input id="lDate" type="date" value="${logDate}"></label>
+  <div class="card"><div class="row"><label>日付<input id="lDate" type="date" max="${today()}" value="${logDate}"></label>
   <label>この日にやった量<input id="lNum" type="number" min="0" inputmode="numeric" value="${cur}" placeholder="0"></label>
   ${u?"":'<label>単位<input id="lUnit" maxlength="8" placeholder="問"></label>'}
   <button class="act" id="lSave">記録する</button></div>
   <div class="meta" style="margin-top:16px">記録（数字を書き換えると修正できます）</div>${Object.keys(c.logs).length?Object.keys(c.logs).sort().reverse().map(d=>`<div class="row" style="align-items:center;margin-top:6px"><span style="min-width:56px">${fmt(d)}</span><input class="lg" data-d="${d}" type="number" min="0" inputmode="numeric" value="${c.logs[d]}" style="width:90px;flex:none" aria-label="${fmt(d)}の記録"><span class="meta">${esc(u)}</span><button class="quiet lgdel" data-d="${d}" aria-label="${fmt(d)}の記録を削除">削除</button></div>`).join(""):'<div class="meta" style="margin-top:6px">まだ記録がありません。</div>'}
   <div style="margin-top:12px"><button class="quiet" id="del">${delArm===c.id?"もう一度押すと削除します":"このチャートを削除"}</button></div></div>`;
-  $("#lDate").onchange=e=>{logDate=e.target.value||today();render()};
+  $("#lDate").onchange=e=>{const v=e.target.value||today();logDate=v>today()?today():v;render()};
   if($("#lUnit"))$("#lUnit").onchange=e=>{c.unit=e.target.value.trim();save();render()};
   $("#lSave").onclick=()=>{const v=Math.max(0,Math.floor(Number($("#lNum").value)||0));if(v)c.logs[logDate]=v;else delete c.logs[logDate];save();render()};
   document.querySelectorAll(".lg").forEach(i=>i.onchange=()=>{const v=Math.max(0,Math.floor(Number(i.value)||0));if(v)c.logs[i.dataset.d]=v;else delete c.logs[i.dataset.d];save();render()});
