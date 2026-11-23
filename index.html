@@ -111,7 +111,7 @@ function chartSvg(c){
   for(let i=0;i<=last;i++){const d=iso(new Date(dt(c.start).getTime()+i*864e5)),v=c.total-sumTo(c,d);if(i<=td)vt=v;pts.push(`${x(i)},${y(v)}`);if(c.logs[d]&&i!==td)dots+=`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="currentColor"/>`}
   if(td>=0){ip=c.total*(1-(td+1)/(n+1));gap=vt-ip;col=gap>0?"var(--warn)":"currentColor";p+=`<polygon points="${pts.slice(0,td+2).join(" ")} ${x(td)},${y(ip)}" style="fill:${col}" fill-opacity=".2"/>`}
   p+=`<polyline points="${pts.join(" ")}" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>${dots}`;
-  if(td>=0)p+=`<line x1="${x(td)}" x2="${x(td)}" y1="${y(ip)}" y2="${y(vt)}" style="stroke:${col}" stroke-width="2"/><circle cx="${x(td)}" cy="${y(ip)}" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="${x(td)}" cy="${y(vt)}" r="5" fill="currentColor"/>`}
+  if(td>=0)p+=`<circle cx="${x(td)}" cy="${y(ip)}" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="${x(td)}" cy="${y(vt)}" r="5" fill="currentColor"/>`}
  p+=`<text x="${x(0)}" y="${H-6}" text-anchor="middle" font-size="10" fill="currentColor">${fmt(c.start)}</text><text x="${W-R}" y="${H-6}" text-anchor="end" font-size="10" fill="currentColor">${fmt(c.end)}</text>`;
  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="残り量の推移グラフ">${p}</svg>`;
 }
