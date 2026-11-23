@@ -101,18 +101,18 @@ const isDone=c=>remain(c)<=0;
 let delArm=null,logDate=today();
 
 function chartSvg(c){
- const W=340,H=210,L=34,R=10,T=10,B=26,n=Math.max(1,diff(c.start,c.end));
- const x=i=>L+(W-L-R)*i/n, y=v=>T+(H-T-B)*(1-Math.max(0,v)/c.total);
+ const W=340,H=315,L=34,R=10,T=10,B=26,n=Math.max(1,diff(c.start,c.end));
+ const x=i=>L+(W-L-R)*(i+1)/(n+1), y=v=>T+(H-T-B)*(1-Math.max(0,v)/c.total);
  let p='';
  [0,.5,1].forEach(f=>{const v=Math.round(c.total*f);p+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="currentColor" stroke-opacity=".3"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="10" fill="currentColor">${v}</text>`});
- p+=`<line x1="${x(0)}" y1="${y(c.total*(1-1/(n+1)))}" x2="${x(n)}" y2="${y(0)}" stroke="currentColor" stroke-opacity=".55" stroke-width="2" stroke-dasharray="5 4"/>`;
+ p+=`<line x1="${x(-1)}" y1="${y(c.total)}" x2="${x(n)}" y2="${y(0)}" stroke="currentColor" stroke-opacity=".55" stroke-width="2" stroke-dasharray="5 4"/>`;
  const td=Math.min(n,diff(c.start,today())),ml=Object.keys(c.logs).sort().pop(),last=Math.min(n,Math.max(td,ml?diff(c.start,ml):-1e9));
- if(last>=0){let pts=[],dots="",vt=c.total,ip=0,gap=0,col="currentColor";
+ if(last>=0){let pts=[`${x(-1)},${y(c.total)}`],dots="",vt=c.total,ip=0,gap=0,col="currentColor";
   for(let i=0;i<=last;i++){const d=iso(new Date(dt(c.start).getTime()+i*864e5)),v=c.total-sumTo(c,d);if(i<=td)vt=v;pts.push(`${x(i)},${y(v)}`);if(c.logs[d]&&i!==td)dots+=`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="currentColor"/>`}
-  if(td>=0){ip=c.total*(1-(td+1)/(n+1));gap=vt-ip;col=gap>0?"var(--warn)":"currentColor";p+=`<polygon points="${x(0)},${y(c.total*(1-1/(n+1)))} ${pts.slice(0,td+1).join(" ")} ${x(td)},${y(ip)}" style="fill:${col}" fill-opacity=".2"/>`}
+  if(td>=0){ip=c.total*(1-(td+1)/(n+1));gap=vt-ip;col=gap>0?"var(--warn)":"currentColor";p+=`<polygon points="${pts.slice(0,td+2).join(" ")} ${x(td)},${y(ip)}" style="fill:${col}" fill-opacity=".2"/>`}
   p+=`<polyline points="${pts.join(" ")}" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>${dots}`;
   if(td>=0)p+=`<line x1="${x(td)}" x2="${x(td)}" y1="${y(ip)}" y2="${y(vt)}" style="stroke:${col}" stroke-width="2"/><circle cx="${x(td)}" cy="${y(ip)}" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="${x(td)}" cy="${y(vt)}" r="5" fill="currentColor"/>`}
- p+=`<text x="${L}" y="${H-6}" font-size="10" fill="currentColor">${fmt(c.start)}</text><text x="${W-R}" y="${H-6}" text-anchor="end" font-size="10" fill="currentColor">${fmt(c.end)}</text>`;
+ p+=`<text x="${x(0)}" y="${H-6}" text-anchor="middle" font-size="10" fill="currentColor">${fmt(c.start)}</text><text x="${W-R}" y="${H-6}" text-anchor="end" font-size="10" fill="currentColor">${fmt(c.end)}</text>`;
  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="残り量の推移グラフ">${p}</svg>`;
 }
 
